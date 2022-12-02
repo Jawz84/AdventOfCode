@@ -14,7 +14,32 @@ $date = Get-Date
 $year = $date.Year
 $day = $date.Day
 $month = $date.Month
-$fileTemplate = @'
+
+$languages = @{
+    TypeScript = @{
+        SetupCommand = @'
+            npm init -y
+            npm install -g ts-node typescript '@types/node'
+            npm install typescript --save-dev
+
+            npx tsc --init --rootDir '' --outDir lib --esModuleInterop --resolveJsonModule --lib es6,dom  --module commonjs
+            if (-not (get-content ..\.gitignore | where {$_ -eq 'node_modules'})) {
+                'node_modules' >> ..\.gitignore
+            }
+'@
+        FileExtension = 'ts'
+        CommentChars = '//'
+        FileTemplate = @'
+import * as fs from 'fs';
+
+let fileContent = fs.readFileSync('input.txt', 'utf8');
+console.log(fileContent);
+'@
+    } 
+    Python = @{
+        FileExtension = 'py'
+        CommentChars = '#'
+        FileTemplate = @'
 import os
 
 currentWorkingDir = os.path.realpath(
@@ -22,9 +47,45 @@ currentWorkingDir = os.path.realpath(
 
 with open(currentWorkingDir + '\input.txt') as f:
     lines = f.readlines()
+'@
+    }
+    PowerShell = @{
+        FileExtension = 'ps1'
+        CommentChars = '#'
+        FileTemplate = @'
+# example input
+$in = Get-Content -Path .\exampleinput.txt
+
+# puzzle input
+# $in = Get-Content -Path .\input.txt
 
 '@
+    }
+}
 
+if (-not (Test-Path .\.gitignore)) {
+@'
+.vscode
+Cookie
+*/input.txt
+'@ > .\.gitignore
+}
+
+
+""
+Write-Host "Choose a language template to set up." -ForegroundColor Green
+"Available language templates:"
+" - $($languages.Keys -join "`n - ")"
+""
+$Language = Read-Host "What language would you like to use primarily? "
+if ($Language -notin $languages.Keys) {
+    throw "Type a valid language name (options: $($languages.Keys -join ', '))"
+}
+
+
+$fileTemplate = $languages.$Language.FileTemplate
+$fileExtension = $languages.$Language.FileExtension
+$commentChars = $languages.$Language.CommentChars
 
 #region functions
 function TryGrabAndSaveInput {
@@ -69,6 +130,8 @@ function GetDayPath {
 }
 
 function Setup {
+    param([string] $SetupCommand)
+
     Write-Host "Setting up default folders and files for each puzzle."
     for ($i = 1; $i -le 25; $i++) {
         $day = "day$i"
@@ -76,18 +139,22 @@ function Setup {
         $folderToCreate = GetDayPath -Day $i
         $null = New-Item -Path $folderToCreate -ItemType Directory -ErrorAction SilentlyContinue
 
-        "$day-1.py", "$day-2.py", "input.txt", "exampleinput.txt" | 
+        "$day-1.$fileExtension", "$day-2.$fileExtension", "input.txt", "exampleinput.txt" | 
             ForEach-Object { 
                 $filePath = GetDayPath -Day $i -FileName $_
                 $null = New-Item -Path $filePath -ItemType File -ErrorAction SilentlyContinue
             }
 
-        $puzzle1script = GetDayPath -Day $i -FileName "$day-1.py"
+        $puzzle1script = GetDayPath -Day $i -FileName "$day-1.$fileExtension"
         $fileContent = Get-Content $puzzle1script
 
         if ([string]::IsNullOrEmpty($fileContent)) {
-            $null = Set-Content -Path $puzzle1script -Value ("# $baseUrl/$year/day/$i `n`n" + $fileTemplate)
+            $null = Set-Content -Path $puzzle1script -Value ("$commentChars $baseUrl/$year/day/$i `n`n" + $fileTemplate)
         }
+    }
+
+    if ($SetupCommand  -notlike '') {
+        [scriptblock]::Create($SetupCommand).Invoke()
     }
 }
 
@@ -117,13 +184,13 @@ Set-Location .\$year
 $baseUrl = "https://adventofcode.com"
 
 if (-not (Test-Path (GetDayPath -Day 25))) {
-    Setup
+    Setup -SetupCommand $languages.$Language.SetupCommand
 }
 
 foreach ($d in $days) {
     TryGrabAndSaveInput -year $year -Day $d
 }
 
-code "$(GetDayPath -day $day)\day$day-1.py"
+code "$(GetDayPath -day $day)\day$day-1.$fileExtension"
 Set-Location  "$(GetDayPath -day $day)\"
 start-process -path "$baseUrl/$year/day/$day"
