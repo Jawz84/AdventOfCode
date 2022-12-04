@@ -18,14 +18,41 @@ $month = $date.Month
 $languages = @{
     TypeScript = @{
         SetupCommand = @'
-            npm init -y
-            npm install -g ts-node typescript '@types/node'
-            npm install typescript --save-dev
-
-            npx tsc --init --rootDir '' --outDir lib --esModuleInterop --resolveJsonModule --lib es6,dom  --module commonjs
             if (-not (get-content ..\.gitignore | where {$_ -eq 'node_modules'})) {
                 'node_modules' >> ..\.gitignore
+                'dist' >> ..\.gitingore
+                package-lock.json >> ..\.gitignore
+                package.json >> ..\.gitignore
+                tsconfig.json >> ..\.gitignore
             }
+
+            npm init -y
+            $package = get-content ./package.json | convertfrom-json -ashashtable
+            $package.type = "module"
+            $package.scripts = @{build = "tsc"}
+            $package | convertto-json | out-file ./package.json -force
+
+            "import { day1 } from './day1/day1-1.js';
+            console.log(day1);" > ./index.ts
+
+            npm install typescript --save-dev
+            npm i -D @types/node
+            npm install -g ts-node typescript '@types/node'
+
+            '{
+                "compilerOptions": {
+                    "strict": true,
+                    "forceConsistentCasingInFileNames": true,
+                    "module": "NodeNext",
+                    "moduleResolution": "NodeNext",
+                    "target": "ES2020",
+                    "sourceMap": true,
+                    "outDir": "dist",
+                },
+                "include": ["./**/*"]
+            }' > tsconfig.json
+
+            Write-Host "`nYou can run all TypeScript puzzles with: npm run build && node ./dist" -foregroundcolor green
 '@
         FileExtension = 'ts'
         CommentChars = '//'
@@ -67,25 +94,19 @@ if (-not (Test-Path .\.gitignore)) {
 @'
 .vscode
 Cookie
-*/input.txt
+**/input.txt
 '@ > .\.gitignore
 }
 
-
-""
-Write-Host "Choose a language template to set up." -ForegroundColor Green
-"Available language templates:"
-" - $($languages.Keys -join "`n - ")"
-""
-$Language = Read-Host "What language would you like to use primarily? "
-if ($Language -notin $languages.Keys) {
-    throw "Type a valid language name (options: $($languages.Keys -join ', '))"
+if (-not (Get-Module -ListAvailable Microsoft.PowerShell.ConsoleGuiTools)) {
+    Install-Module Microsoft.PowerShell.ConsoleGuiTools -Force
 }
 
+$languages.Keys | Out-ConsoleGridView -Title "Choose a language template to set up." -OutputMode Single -OutVariable language
 
-$fileTemplate = $languages.$Language.FileTemplate
-$fileExtension = $languages.$Language.FileExtension
-$commentChars = $languages.$Language.CommentChars
+$fileTemplate = $languages."$Language".FileTemplate
+$fileExtension = $languages."$Language".FileExtension
+$commentChars = $languages."$Language".CommentChars
 
 #region functions
 function TryGrabAndSaveInput {
@@ -178,13 +199,13 @@ if ($parentDirectoryName -notmatch "^AdventOfCode$") {
 $yearFolder = Get-ChildItem -Directory -Filter $year
 if (-not ($yearFolder)) {
     New-Item -ItemType Directory -Name $year
-} 
+}
 Set-Location .\$year
 
 $baseUrl = "https://adventofcode.com"
 
 if (-not (Test-Path (GetDayPath -Day 25))) {
-    Setup -SetupCommand $languages.$Language.SetupCommand
+    Setup -SetupCommand $languages."$Language".SetupCommand
 }
 
 foreach ($d in $days) {
