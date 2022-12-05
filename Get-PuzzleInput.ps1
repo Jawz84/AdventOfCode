@@ -57,12 +57,20 @@ $languages = @{
         FileExtension = 'ts'
         CommentChars = '//'
         FileTemplate = @'
-import * as fs from 'fs';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-let fileContent = fs.readFileSync('input.txt', 'utf8');
-console.log(fileContent);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename).replace('\\dist','');
+
+let input = fs.readFileSync(path.join(__dirname, 'exampleinput.txt'), 'utf8');
+
+// input = fs.readFileSync(path.join(__dirname, 'input.txt'), 'utf8');
+
+let lines = input.split('\n');
 '@
-    } 
+    }
     Python = @{
         FileExtension = 'py'
         CommentChars = '#'
