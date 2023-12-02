@@ -19,6 +19,7 @@ $in | ForEach-Object {
     if ($_ -match "(?'size'^\d+)") {
         $path = $cwd -join '_'
         foreach ($folder in $cwd) {
+            $path
             $dirSizes.$path += [decimal]$matches.size
             $path = $path.Replace("$($folder)_", '')
         }
@@ -30,4 +31,7 @@ $dirSizes.Values |
     Measure-Object -Sum |
     Select-Object -ExpandProperty Sum
 
-# too high
+
+# 1488737 is too low
+# 1915633 is too high
+1743217

@@ -1,0 +1,15 @@
+C:\Users\joskw\GitNoOneDrive\AdventOfCode\2022\obj\Debug\net6.0\2022.csproj.AssemblyReference.cache
+C:\Users\joskw\GitNoOneDrive\AdventOfCode\2022\obj\Debug\net6.0\2022.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\joskw\GitNoOneDrive\AdventOfCode\2022\obj\Debug\net6.0\2022.AssemblyInfoInputs.cache
+C:\Users\joskw\GitNoOneDrive\AdventOfCode\2022\obj\Debug\net6.0\2022.AssemblyInfo.cs
+C:\Users\joskw\GitNoOneDrive\AdventOfCode\2022\obj\Debug\net6.0\2022.csproj.CoreCompileInputs.cache
+C:\Users\joskw\GitNoOneDrive\AdventOfCode\2022\bin\Debug\net6.0\2022.exe
+C:\Users\joskw\GitNoOneDrive\AdventOfCode\2022\bin\Debug\net6.0\2022.deps.json
+C:\Users\joskw\GitNoOneDrive\AdventOfCode\2022\bin\Debug\net6.0\2022.runtimeconfig.json
+C:\Users\joskw\GitNoOneDrive\AdventOfCode\2022\bin\Debug\net6.0\2022.dll
+C:\Users\joskw\GitNoOneDrive\AdventOfCode\2022\bin\Debug\net6.0\2022.pdb
+C:\Users\joskw\GitNoOneDrive\AdventOfCode\2022\obj\Debug\net6.0\2022.dll
+C:\Users\joskw\GitNoOneDrive\AdventOfCode\2022\obj\Debug\net6.0\refint\2022.dll
+C:\Users\joskw\GitNoOneDrive\AdventOfCode\2022\obj\Debug\net6.0\2022.pdb
+C:\Users\joskw\GitNoOneDrive\AdventOfCode\2022\obj\Debug\net6.0\2022.genruntimeconfig.cache
+C:\Users\joskw\GitNoOneDrive\AdventOfCode\2022\obj\Debug\net6.0\ref\2022.dll

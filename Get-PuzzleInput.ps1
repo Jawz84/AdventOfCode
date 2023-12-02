@@ -220,6 +220,12 @@ foreach ($d in $days) {
     TryGrabAndSaveInput -year $year -Day $d
 }
 
+$fileToOpen = "$(GetDayPath -day $day)\day$day-1.$fileExtension"
+
+if (-not (Test-Path $fileToOpen)) {
+    $languages."$language".filetemplate > $fileToOpen
+}
+
 code "$(GetDayPath -day $day)\day$day-1.$fileExtension"
 Set-Location  "$(GetDayPath -day $day)\"
 start-process -path "$baseUrl/$year/day/$day"
